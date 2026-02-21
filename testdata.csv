@@ -1,0 +1,10 @@
+TR
+cob date : 10/11/2025
+Account Number,Debit/Credit,Amount,Date,Details
+57258100005021,Debit,10000.00,05-01-2024,ATM Withdrawal - Main St
+57258100005021,Credit,2400.00,10-01-2024,Refund - Amazon India
+00000010924972,Debit,1000.00,12-01-2024,UPI - Swiggy Order
+00000010924972,Cr,52521.00,15-01-2024,Salary - XYZ Corp
+57258100005021,Debit,123,20-01-2024,ATM Withdrawal - Airport
+00000010924972,Credit,3187.00,25-01-2024,Interest Credit - SBINT
+57258100005021,Debit,142.00,29-01-2024,Debit Card Annual Charges
