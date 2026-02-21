@@ -1,7 +1,7 @@
 import pandas as pd
 import xml.etree.ElementTree as ET
 import numpy as np
-from readFile import readData
+from fileOperations import readData, writeData
 from discard import applyDiscard
 from enrichment import applyEnrichment
 from extractStatic import staticGenerator
@@ -75,6 +75,18 @@ class FeedParser:
                     'rule' : (enrichment.find("rule")).text,
                     'dataType': enrichment.get("dataType","")
                 })
+            output = feed.find('output')
+            if output is not None:
+                nmlist = []
+                for column in output.findall('column'):
+                    nmlist.append(column.text)
+
+                feed_info['columns'] = {
+                    'FeedName' : output.get("FeedName"),
+                    'delimiter' : output.get("delimiter"),
+                    'feedType' : output.get("feedType"),
+                    'name': nmlist
+                }
 
             rules = feed.find('SingleStageDiscard')
             if rules is not None:
@@ -94,6 +106,6 @@ if __name__ == "__main__":
         df = applyDiscard(df,feed["discards"])
         df = applyEnrichment(df,feed["enrichment"])
         df = applyDiscard(df,feed["single_stage_discard"])
+        #writeData(df,feed["output"])
         print(df)
         df.info()
-        #print(STATIC_VARIABLES)

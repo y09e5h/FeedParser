@@ -27,11 +27,12 @@ def _apply_filter(localvars, rule):
 def staticGenerator(fileName,fileType,staticColumns):
     if fileType == 'CSV' or fileType == 'TXT' :
         with open(fileName,'r') as f:
+            i=1
             for staticColumn in staticColumns:
                 
                 static_value=""
                 column = staticColumn["column"]
-                filter = staticColumn["filter"]
+                filter_str = staticColumn["filter"]
                 resultIndex = int(staticColumn["resultIndex"])
                 if staticColumn["rowNumber"] :
                     print("in Static row number")
@@ -42,12 +43,13 @@ def staticGenerator(fileName,fileType,staticColumns):
                     f.seek(0)
                     result=[]
                     for line in f:
-                        if _apply_filter({column: line}, filter):
+                        print(line)
+                        if _apply_filter({column: line}, filter_str):
                             result.append(line)
                     static_value = result[resultIndex] if len(result) > resultIndex else None
                     print("CHECK 1- ",static_value)
-
-                if static_value != None:
+                    print(f"static value {++i} : {static_value}")
+                if static_value:
                     STATIC_VARIABLES[column] = _apply_rule(column, static_value, staticColumn["rule"])
                 else:
                     STATIC_VARIABLES[column] = ""

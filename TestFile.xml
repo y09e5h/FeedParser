@@ -1,47 +1,55 @@
 <Feeds>
     <Feed FeedName="testdata.csv">
-    <properties delimeter ="," skipHeader="3" skipFooter="0" feedType="CSV"/>
-    <columns>
-        <column index = "1" DataType="str">Account</column>
-        <column index = "2" DataType="str">DCIP</column>
-        <column index = "3" DataType="float">Amount</column>
-    </columns>
-    <staticColumns>
-        <column name="cob_date">
-            <rule><![CDATA[cob_date[11:21]]]></rule>
-            <filter resultIndex="0"><![CDATA[cob_date[:3] == "cob"]]></filter><!--rowNumber="1" -->
-        </column>
-    </staticColumns>
-    <discards>
-        <rule><![CDATA[DCIP.upper() == "CREDIT"]]></rule>
-        <rule></rule>
-    </discards>
-    <Enrichments>
-        <Enrichment ColumnName="DCIP">
-            <rule><![CDATA[DCIP.upper()]]></rule>
-            <filter></filter>
-        </Enrichment>
-        <Enrichment ColumnName="OriginalAmount" dataType="str">
-            <rule><![CDATA[Amount/100]]></rule>
-        </Enrichment>
+        <properties delimiter ="," skipHeader="3" skipFooter="0" feedType="CSV"/>
+        <columns>
+            <column index = "1" DataType="str">Account</column>
+            <column index = "2" DataType="str">DCIP</column>
+            <column index = "3" DataType="float">Amount</column>
+        </columns>
+        <staticColumns>
+            <column name="cob_date">
+                <rule><![CDATA[cob_date[11:21]]]></rule>
+                <filter resultIndex="0"><![CDATA[cob_date[:3] == "cob"]]></filter><!--rowNumber="1" -->
+            </column>
+        </staticColumns>
+        <discards>
+            <rule><![CDATA[DCIP.upper() == "CREDIT"]]></rule>
+            <rule></rule>
+        </discards>
+        <Enrichments>
+            <Enrichment ColumnName="DCIP">
+                <rule><![CDATA[DCIP.upper()]]></rule>
+                <filter></filter>
+            </Enrichment>
+            <Enrichment ColumnName="OriginalAmount" dataType="str">
+                <rule><![CDATA[Amount/100]]></rule>
+            </Enrichment>
 
-        <Enrichment ColumnName="Amount">
-            <rule><![CDATA[Amount/100]]></rule>
-            <filter><![CDATA[Amount>1000]]></filter>
-        </Enrichment>
-        <Enrichment ColumnName="DCIP">
-            <rule><![CDATA[DCIP[0:2]]]></rule>
-            <filter></filter>
-        </Enrichment>
-        
-        <Enrichment ColumnName="COBDATE">
-            <rule><![CDATA[cob_date]]></rule>
-            <filter></filter>
-        </Enrichment>
-    </Enrichments>
+            <Enrichment ColumnName="Amount">
+                <rule><![CDATA[Amount/100]]></rule>
+                <filter><![CDATA[Amount>1000]]></filter>
+            </Enrichment>
+            <Enrichment ColumnName="DCIP">
+                <rule><![CDATA[DCIP[0:2]]]></rule>
+                <filter></filter>
+            </Enrichment>
 
-    <SingleStageDiscard>
-        <rule><![CDATA[]]></rule>
-    </SingleStageDiscard>
+            <Enrichment ColumnName="COBDATE">
+                <rule><![CDATA[cob_date]]></rule>
+                <filter></filter>
+            </Enrichment>
+        </Enrichments>
+
+        <SingleStageDiscard>
+            <rule><![CDATA[]]></rule>
+        </SingleStageDiscard>
+
+        <output FeedName ="Result.csv" delimiter ="," feedType="CSV">
+            <column>Account</column>
+            <column>DCIP</column>
+            <column>Amount</column>
+            <column>COBDATE</column>
+        </output>
+
     </Feed>
 </Feeds>
