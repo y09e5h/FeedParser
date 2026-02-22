@@ -10,8 +10,6 @@ def _readCSV(feed):
     df = pd.read_csv(feed['feed_name'],usecols=index_list,delimiter=delim,names=feed['columns'].get("name"),dtype=feed['columns'].get('data_type') ,skiprows=int(feed['properties'].get('skipHeader', 0)), skipfooter=int(feed['properties'].get('skipFooter', 0)), engine='python')
     return df
 
-
-
 def _writeCSV(df,feedName,delimiter,columnNames,mode):
     try:
         df.to_csv(feedName,sep=delimiter,columns=columnNames, mode=mode ,index=False)

@@ -6,7 +6,10 @@ from extractStatic import staticGenerator
 from lxml import etree
 import logging
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+    )
 
 class FeedParser:
     def __init__(self, xml_file):
@@ -140,23 +143,23 @@ if __name__ == "__main__":
         df = readData(feed)
         if not df.empty:
             if feed["staticColumn"] is not None:
-                logging.info(f"Generating Static data : ")
+                logging.info(f"Generating Static data")
                 staticGenerator(feed["feed_name"],feed['properties'].get('feedType'),feed["staticColumn"])
             if feed["discards"] is not None:
-                logging.info(f"Applying Discard : ")
+                logging.info(f"Applying Discard")
                 df = applyDiscard(df,feed["discards"])
             if feed["enrichment"] is not None:
                 if not df.empty:
-                    logging.info(f"Applying Enrichment : ")
+                    logging.info(f"Applying Enrichment")
                     df = applyEnrichment(df,feed["enrichment"])
                 else:
-                    logging.warning(f"Empty dataset skipping the Enrichment : ")
+                    logging.warning(f"Empty dataset skipping the Enrichment")
             if feed["single_stage_discard"] is not None:
                 if not df.empty:
-                    logging.info(f"Applying Stage Discard : ")
+                    logging.info(f"Applying Stage Discard")
                     df = applyDiscard(df,feed["single_stage_discard"])
                 else:
-                    logging.warning(f"Empty dataset skipping the Stage Discard : ")
+                    logging.warning(f"Empty dataset skipping the Stage Discard")
         else:
             logging.warning(f"Processing skipped : Data is empty for {feed['feed_name']}")
         logging.info(f"Writing to {feed['output']['FeedName']}")
