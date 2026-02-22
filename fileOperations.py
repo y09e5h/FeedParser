@@ -1,8 +1,8 @@
 import pandas as pd
 def _readCSV(feed):
     return pd.read_csv(feed['feed_name'],usecols=feed['columns'].get('index'),delimiter=feed['properties'].get("delimiter"),names=feed['columns'].get("name"),dtype=feed['columns'].get('data_type') ,skiprows=int(feed['properties'].get('skipHeader', 0)), skipfooter=int(feed['properties'].get('skipFooter', 0)), engine='python')
-def _writeCSV(df,feed):
-    df.to_csv('output_file.csv', index=False)
+def _writeCSV(df,feedName,delimiter,columnNames,mode):
+    df.to_csv(feedName,sep=delimiter,columns=columnNames, mode=mode ,index=False)
 def _writeFixWidth(feed):
     pass
 def _readFixWidth(feed):
@@ -32,4 +32,14 @@ def readData(feed):
 
 def writeData(df,outputFormat):
     print(f"Processing feed: {outputFormat['feed_name']}")
-    feedType = outputFormat['properties'].get('feedType')
+    feedType = outputFormat['feedType']
+    feedName = outputFormat['feed_name']
+    delimiter = outputFormat['delimiter']
+    columnNames = outputFormat['name']
+    mode = outputFormat['mode'].lower()
+    if feedType == 'CSV' or feedType == "TXT":
+        _writeCSV(df, feedName,delimiter,columnNames,mode)
+    elif feedType == "FIXWIDTH":
+        _writeFixWidth(df, feedName,columnNames)
+    else:
+        pass

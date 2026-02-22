@@ -81,11 +81,12 @@ class FeedParser:
                 for column in output.findall('column'):
                     nmlist.append(column.text)
 
-                feed_info['columns'] = {
+                feed_info['output'] = {
                     'FeedName' : output.get("FeedName"),
                     'delimiter' : output.get("delimiter"),
                     'feedType' : output.get("feedType"),
-                    'name': nmlist
+                    'name': nmlist,
+                    'mode' : output.get("mode")
                 }
 
             rules = feed.find('SingleStageDiscard')

@@ -44,7 +44,7 @@
             <rule><![CDATA[]]></rule>
         </SingleStageDiscard>
 
-        <output FeedName ="Result.csv" delimiter ="," feedType="CSV">
+        <output FeedName ="Result.csv" delimiter ="," feedType="CSV" mode="W">
             <column>Account</column>
             <column>DCIP</column>
             <column>Amount</column>
