@@ -40,7 +40,7 @@
         </Enrichments>
 
         <SingleStageDiscard>
-            <rule><![CDATA[]]></rule>
+            <rule><![CDATA[DCIP == 'CREDIT']]></rule>
         </SingleStageDiscard>
 
         <output FeedName ="Result.csv" delimiter ="," feedType="CSV" >
@@ -82,7 +82,7 @@
             <rule><![CDATA[]]></rule>
         </SingleStageDiscard>
 
-        <output FeedName ="FxResult.csv" delimiter ="," feedType="FIXWIDTH" mode="W">
+        <output FeedName ="FxResult.csv" delimiter ="," feedType="CSV" mode="W">
             <column>Account</column>
             <column>Name</column>
             <column>Trade</column>

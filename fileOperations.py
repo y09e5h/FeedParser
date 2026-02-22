@@ -29,8 +29,8 @@ def _readFixWidth(feed):
 
 def _readJSON(feed):
     pass
-def _writeJSON(feed):
-    pass
+def _writeJSON(df,feedName,columnNames,mode):
+    df[columnNames].to_json(feedName,orient='records',mode=mode,date_format='iso')
 
 def _readPDF(feed):
     pass
@@ -74,5 +74,7 @@ def writeData(df,outputFormat):
         _writeCSV(df, feedName,delimiter,columnNames,mode)
     elif feedType == "FIXWIDTH":
         _writeFixWidth(df, feedName,columnNames,mode)
+    elif feedType == "JSON":
+        _writeJSON(df, feedName,columnNames,mode)
     else:
         pass
