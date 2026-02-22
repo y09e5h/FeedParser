@@ -2,6 +2,7 @@ import logging
 from itertools import islice
 from GlobalConfig import STATIC_VARIABLES
 #from GlobalConfig import _apply_filter
+ruleSucess=True
 def _apply_rule(column,data, rule):
     rule = rule.strip()
     if not rule:
@@ -14,12 +15,14 @@ def _apply_rule(column,data, rule):
         return data
 
 def _apply_filter(localvars, rule):
+    global ruleSucess
     if not rule or not rule.strip():
         return True    
     try:
         return eval(rule, STATIC_VARIABLES, localvars)
     except Exception as e:
         logging.critical(f"Error evaluating rule '{rule}': {e}")
+        ruleSucess=False
         return False
 
 def staticGenerator(fileName,fileType,staticColumns):
@@ -39,9 +42,12 @@ def staticGenerator(fileName,fileType,staticColumns):
                     else:
                         f.seek(0)
                         result=[]
+                        global ruleSucess
+                        ruleSucess=True
                         for line in f:
-                            if _apply_filter({column: line}, filter_str):
-                                result.append(line)
+                            if ruleSucess:
+                                if _apply_filter({column: line}, filter_str):
+                                    result.append(line)
                         static_value = result[resultIndex] if len(result) > resultIndex else None
                     if static_value:
                         STATIC_VARIABLES[column] = _apply_rule(column, static_value, staticColumn["rule"])

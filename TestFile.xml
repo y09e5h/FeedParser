@@ -30,8 +30,8 @@
                 <filter><![CDATA[Amount>1000]]></filter>
             </Enrichment>
             <Enrichment ColumnName="DCIP">
-                <rule><![CDATA[DCIP[0:2]]]></rule>
-                <filter></filter>
+                <rule><![CDATA["CREDIT"]]></rule>
+                <filter>DCIP == "CR"</filter>
             </Enrichment>
 
             <Enrichment ColumnName="COBDATE">
