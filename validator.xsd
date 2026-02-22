@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <!-- FeedType Enum -->
+    <xs:simpleType name="FeedType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="CSV"/>
+            <xs:enumeration value="TXT"/>
+            <xs:enumeration value="FIXWIDTH"/>
+            <xs:enumeration value="PDF"/>
+            <xs:enumeration value="JSON"/>
+            <xs:enumeration value="XML"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="ModeType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="A"/>
+            <xs:enumeration value="W"/>
+            <xs:enumeration value="a"/>
+            <xs:enumeration value="w"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <!-- Root -->
+    <xs:element name="Feeds">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Feed" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+
+                            <!-- Properties -->
+                            <xs:element name="properties">
+                                <xs:complexType>
+                                    <xs:attribute name="delimiter" type="xs:string" use="optional"/>
+                                    <xs:attribute name="skipHeader" type="xs:integer" use="optional"/>
+                                    <xs:attribute name="skipFooter" type="xs:integer" use="optional"/>
+                                    <xs:attribute name="feedType" type="FeedType" use="required"/>
+                                </xs:complexType>
+                            </xs:element>
+
+                            <!-- Columns -->
+                            <xs:element name="columns">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="column" maxOccurs="unbounded">
+                                            <xs:complexType mixed="true">
+                                                <xs:attribute name="index" type="xs:string" use="required"/>
+                                                <xs:attribute name="DataType" type="xs:string" use="optional"/>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+
+                            <!-- Static Columns -->
+                            <xs:element name="staticColumns" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="column" maxOccurs="unbounded" minOccurs="0">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="rule" type="xs:string" minOccurs="0"/>
+                                                    <xs:element name="filter" minOccurs="0">
+                                                        <xs:complexType mixed="true">
+                                                            <xs:attribute name="resultIndex" type="xs:integer" use="required"/>
+                                                            <xs:attribute name="rowNumber" type="xs:integer" use="optional"/>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:sequence>
+                                                <xs:attribute name="name" type="xs:string" use="required"/>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+
+                            <!-- Discards -->
+                            <xs:element name="discards" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="rule" type="xs:string" maxOccurs="unbounded"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+
+                            <!-- Enrichments -->
+                            <xs:element name="Enrichments" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="Enrichment" maxOccurs="unbounded">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="rule" type="xs:string" minOccurs="0"/>
+                                                    <xs:element name="filter" type="xs:string" minOccurs="0"/>
+                                                </xs:sequence>
+                                                <xs:attribute name="ColumnName" type="xs:string" use="required"/>
+                                                <xs:attribute name="dataType" type="xs:string" use="optional"/>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+
+                            <!-- Single Stage Discard -->
+                            <xs:element name="SingleStageDiscard" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="rule" type="xs:string" minOccurs="0"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+
+                            <!-- Output -->
+                            <xs:element name="output">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="column" type="xs:string" maxOccurs="unbounded"/>
+                                    </xs:sequence>
+                                    <xs:attribute name="FeedName" type="xs:string" use="required"/>
+                                    <xs:attribute name="delimiter" type="xs:string" use="optional"/>
+                                    <xs:attribute name="feedType" type="FeedType" use="required"/>
+                                    <xs:attribute name="mode" type="ModeType" use="optional"/>
+                                </xs:complexType>
+                            </xs:element>
+
+                        </xs:sequence>
+
+                        <xs:attribute name="FeedName" type="xs:string" use="required"/>
+
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

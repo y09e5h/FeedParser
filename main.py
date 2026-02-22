@@ -1,11 +1,12 @@
-import pandas as pd
 import xml.etree.ElementTree as ET
-import numpy as np
 from fileOperations import readData, writeData
 from discard import applyDiscard
 from enrichment import applyEnrichment
 from extractStatic import staticGenerator
-from GlobalConfig import STATIC_VARIABLES
+from lxml import etree
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 class FeedParser:
     def __init__(self, xml_file):
@@ -38,7 +39,7 @@ class FeedParser:
                 nmlist=[]
                 dtype={}
                 for column in columns.findall('column'):
-                    cilist.append(int(column.get('index'))-1)
+                    cilist.append(column.get('index'))
                     nmlist.append(column.text)
                     dtype[column.text]=column.get('DataType')
 
@@ -54,27 +55,28 @@ class FeedParser:
 
             
             staticColumns = feed.find('staticColumns')
-            
-            for staticColumn in staticColumns:
-                feed_info['staticColumn'].append({
-                    'column' : staticColumn.get("name"),
-                    'filter': (staticColumn.find("filter")).text,
-                    'rowNumber': (staticColumn.find("filter")).get("rowNumber",""),
-                    'resultIndex': (staticColumn.find("filter")).get("resultIndex","0"),
-                    'rule' : (staticColumn.find("rule")).text,
-                    'dataType': "str"
-                })
+            if staticColumns is not None:
+                for staticColumn in staticColumns:
+                    feed_info['staticColumn'].append({
+                        'column' : staticColumn.get("name"),
+                        'filter': (staticColumn.find("filter")).text,
+                        'rowNumber': (staticColumn.find("filter")).get("rowNumber",""),
+                        'resultIndex': (staticColumn.find("filter")).get("resultIndex","0"),
+                        'rule' : (staticColumn.find("rule")).text,
+                        'dataType': "str"
+                    })
 
 
 
             enrichemnts = feed.find('Enrichments')
-            for enrichment in enrichemnts:
-                feed_info['enrichment'].append({
-                    'column' : enrichment.get("ColumnName"),
-                    'filter': (enrichment.find("filter")).text if enrichment.find("filter") is not None else "" ,
-                    'rule' : (enrichment.find("rule")).text,
-                    'dataType': enrichment.get("dataType","")
-                })
+            if enrichemnts is not None:
+                for enrichment in enrichemnts:
+                    feed_info['enrichment'].append({
+                        'column' : enrichment.get("ColumnName"),
+                        'filter': (enrichment.find("filter")).text if enrichment.find("filter") is not None else "" ,
+                        'rule' : (enrichment.find("rule")).text,
+                        'dataType': enrichment.get("dataType","")
+                    })
             output = feed.find('output')
             if output is not None:
                 nmlist = []
@@ -86,7 +88,7 @@ class FeedParser:
                     'delimiter' : output.get("delimiter"),
                     'feedType' : output.get("feedType"),
                     'name': nmlist,
-                    'mode' : output.get("mode")
+                    'mode' : output.get("mode") if output.get("mode") is not None else "W",
                 }
 
             rules = feed.find('SingleStageDiscard')
@@ -96,17 +98,67 @@ class FeedParser:
             
             self.feeds.append(feed_info)
 
+def validate_xml(xml_file, xsd_file):
+    try:
+        # Load XSD
+        with open(xsd_file, 'rb') as f:
+            schema_root = etree.XML(f.read())
+            schema = etree.XMLSchema(schema_root)
 
+        # Load XML
+        with open(xml_file, 'rb') as f:
+            xml_doc = etree.XML(f.read())
+
+        # Validate
+        schema.assertValid(xml_doc)
+
+        logging.info("✅ XML is valid!")
+        return True
+
+    except etree.DocumentInvalid as e:
+        logging.critical("❌ XML is invalid!")
+        logging.critical(e)
+        return False
+
+    except Exception as e:
+        logging.critical("⚠️ Error:", e)
+        return False
             
 if __name__ == "__main__":
-    parser = FeedParser('TestFile.xml')
-    print(parser.feeds)
+    configXmlFile = "TestFile.xml"
+    configXsd="validator.xsd"
+    logging.info(f"Validating {configXmlFile}")
+    if not validate_xml(configXmlFile, configXsd):
+        exit(1)
+    logging.info(f"Parsing {configXsd}")
+    parser = FeedParser(configXmlFile)
+    #print(parser.feeds)
     for feed in parser.feeds:
+        logging.info("")
+        logging.info(f"================================ START {feed['feed_name']}===========================")
+        logging.info(f"Reading data from {feed['feed_name']}")
         df = readData(feed)
-        staticGenerator(feed["feed_name"],feed['properties'].get('feedType'),feed["staticColumn"])
-        df = applyDiscard(df,feed["discards"])
-        df = applyEnrichment(df,feed["enrichment"])
-        df = applyDiscard(df,feed["single_stage_discard"])
-        #writeData(df,feed["output"])
-        print(df)
-        df.info()
+        if not df.empty:
+            if feed["staticColumn"] is not None:
+                logging.info(f"Generating Static data : ")
+                staticGenerator(feed["feed_name"],feed['properties'].get('feedType'),feed["staticColumn"])
+            if feed["discards"] is not None:
+                logging.info(f"Applying Discard : ")
+                df = applyDiscard(df,feed["discards"])
+            if feed["enrichment"] is not None:
+                if not df.empty:
+                    logging.info(f"Applying Enrichment : ")
+                    df = applyEnrichment(df,feed["enrichment"])
+                else:
+                    logging.warning(f"Empty dataset skipping the Enrichment : ")
+            if feed["single_stage_discard"] is not None:
+                if not df.empty:
+                    logging.info(f"Applying Stage Discard : ")
+                    df = applyDiscard(df,feed["single_stage_discard"])
+                else:
+                    logging.warning(f"Empty dataset skipping the Stage Discard : ")
+        else:
+            logging.warning(f"Processing skipped : Data is empty for {feed['feed_name']}")
+        logging.info(f"Writing to {feed['output']['FeedName']}")
+        writeData(df,feed["output"])
+

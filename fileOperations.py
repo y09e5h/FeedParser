@@ -1,45 +1,80 @@
+import logging
+
 import pandas as pd
+import ast
 def _readCSV(feed):
-    return pd.read_csv(feed['feed_name'],usecols=feed['columns'].get('index'),delimiter=feed['properties'].get("delimiter"),names=feed['columns'].get("name"),dtype=feed['columns'].get('data_type') ,skiprows=int(feed['properties'].get('skipHeader', 0)), skipfooter=int(feed['properties'].get('skipFooter', 0)), engine='python')
+    index_list = []
+    for ind in feed['columns'].get('index'):
+        index_list.append(int(ind)-1)
+    delim = feed['properties'].get("delimiter") if feed['properties'].get("delimiter") is not None else ","
+    df = pd.read_csv(feed['feed_name'],usecols=index_list,delimiter=delim,names=feed['columns'].get("name"),dtype=feed['columns'].get('data_type') ,skiprows=int(feed['properties'].get('skipHeader', 0)), skipfooter=int(feed['properties'].get('skipFooter', 0)), engine='python')
+    return df
+
+
+
 def _writeCSV(df,feedName,delimiter,columnNames,mode):
-    df.to_csv(feedName,sep=delimiter,columns=columnNames, mode=mode ,index=False)
-def _writeFixWidth(feed):
-    pass
+    try:
+        df.to_csv(feedName,sep=delimiter,columns=columnNames, mode=mode ,index=False)
+    except KeyError as e:
+        print("Column is not defined")
+        print(e)
+def _writeFixWidth(df,feedName,columnNames,mode):
+    with open(feedName, mode) as f:
+        f.write(df[columnNames].to_string(index=False))
 def _readFixWidth(feed):
-    pass
+    index_list = [ast.literal_eval(i) for i in feed['columns'].get('index')]
+    return pd.read_fwf(feed['feed_name'], colspecs=index_list,
+                       names=feed['columns'].get("name"),
+                       dtype=feed['columns'].get('data_type'), skiprows=int(feed['properties'].get('skipHeader', 0)),
+                       skipfooter=int(feed['properties'].get('skipFooter', 0)), engine='python')
+
 
 def _readJSON(feed):
     pass
 def _writeJSON(feed):
     pass
-def _readFixedWidth(feed):
-     print("Not Available")
-def _writeFixedWidth(feed):
-    pass
+
 def _readPDF(feed):
     pass
 def _writePDF(feed):
     pass
 
 def readData(feed):
-        print(f"Processing feed: {feed['feed_name']}")
         feedType = feed['properties'].get('feedType')
-        if feedType == 'CSV' or feedType == "TXT" or feedType == "FIXWIDTH":
-            df = _readCSV(feed)
-            return df
-        else :
-             print("Invalid File Format")
+        try:
+            if feedType == 'CSV' or feedType == "TXT":
+                df = _readCSV(feed)
+                return df
+            elif feedType == "FIXWIDTH":
+                df = _readFixWidth(feed)
+                return df
+            else :
+                logging.critical("Invalid File Format")
+                return pd.DataFrame()
+        except FileNotFoundError as e:
+            logging.critical(e)
+            return pd.DataFrame()
+        except ValueError as e:
+            logging.critical(e)
+            return pd.DataFrame()
+        except Exception as e:
+            logging.critical(e)
+            return pd.DataFrame()
+
 
 def writeData(df,outputFormat):
-    print(f"Processing feed: {outputFormat['feed_name']}")
+
     feedType = outputFormat['feedType']
-    feedName = outputFormat['feed_name']
+    feedName = outputFormat['FeedName']
     delimiter = outputFormat['delimiter']
     columnNames = outputFormat['name']
     mode = outputFormat['mode'].lower()
+
+    if df.empty:
+        df = pd.DataFrame(columns=columnNames)
     if feedType == 'CSV' or feedType == "TXT":
         _writeCSV(df, feedName,delimiter,columnNames,mode)
     elif feedType == "FIXWIDTH":
-        _writeFixWidth(df, feedName,columnNames)
+        _writeFixWidth(df, feedName,columnNames,mode)
     else:
         pass

@@ -36,7 +36,6 @@
 
             <Enrichment ColumnName="COBDATE">
                 <rule><![CDATA[cob_date]]></rule>
-                <filter></filter>
             </Enrichment>
         </Enrichments>
 
@@ -44,7 +43,7 @@
             <rule><![CDATA[]]></rule>
         </SingleStageDiscard>
 
-        <output FeedName ="Result.csv" delimiter ="," feedType="CSV" mode="W">
+        <output FeedName ="Result.csv" delimiter ="," feedType="CSV" >
             <column>Account</column>
             <column>DCIP</column>
             <column>Amount</column>
@@ -52,4 +51,44 @@
         </output>
 
     </Feed>
+
+
+    <Feed FeedName="fixedWidthData.dat">
+        <properties delimiter ="," skipHeader="0" skipFooter="0" feedType="FIXWIDTH"/>
+        <columns>
+            <column index = "(0,5)" DataType="str">Account</column>
+            <column index = "(6,17)" DataType="str">Name</column>
+            <column index = "(18,28)" DataType="str">Trade</column>
+        </columns>
+        <!--<staticColumns>-->
+           <!-- <column name="cob_date">
+                <rule><![CDATA[cob_date[11:21]]]></rule>
+                <filter resultIndex="0"><![CDATA[cob_date[:3] == "cob"]]></filter>
+            </column>--><!-- Filter properties : rowNumber="1" -->
+        <!--</staticColumns>-->
+        <discards>
+            <rule><![CDATA[Trade.upper() == "CREDIT"]]></rule>
+            <rule></rule>
+        </discards>
+        <Enrichments>
+            <Enrichment ColumnName="Trade">
+                <rule><![CDATA[Trade.upper()]]></rule>
+                <filter></filter>
+            </Enrichment>
+
+        </Enrichments>
+
+        <SingleStageDiscard>
+            <rule><![CDATA[]]></rule>
+        </SingleStageDiscard>
+
+        <output FeedName ="FxResult.csv" delimiter ="," feedType="FIXWIDTH" mode="W">
+            <column>Account</column>
+            <column>Name</column>
+            <column>Trade</column>
+        </output>
+
+    </Feed>
+
+
 </Feeds>

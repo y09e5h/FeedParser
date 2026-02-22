@@ -1,3 +1,5 @@
+import logging
+
 from GlobalConfig import STATIC_VARIABLES
 
 def _apply_filter(row, rule):
@@ -7,10 +9,9 @@ def _apply_filter(row, rule):
     try:
         return eval(rule, STATIC_VARIABLES, row.to_dict())
     except Exception as e:
-        print(f"Error evaluating rule '{rule}': {e}")
+        logging.critical(f"Error evaluating rule '{rule}': {e}")
         return False
 def applyEnrichment(df,enrichments):
-    print("Applying enrichment...")
     #print(df)
     for enrichment in enrichments:
         column=enrichment["column"]
