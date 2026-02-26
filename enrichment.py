@@ -65,4 +65,5 @@ def applyEnrichment(df,enrichments):
                     logging.critical(f"⚠️ Group Function not specified correctly : {rule}")
         if datatype:
             df[column] = df[column].astype(datatype)
+
     return df
