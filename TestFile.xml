@@ -43,8 +43,6 @@
                 <filter><![CDATA[Amount<5000]]></filter>
             </GroupEnrichment>
 
-
-
             <Enrichment ColumnName="COBDATE">
                 <rule><![CDATA[cob_date]]></rule>
             </Enrichment>
