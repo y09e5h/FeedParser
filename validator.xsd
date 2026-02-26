@@ -87,7 +87,7 @@
                             <!-- Enrichments -->
                             <xs:element name="Enrichments" minOccurs="0">
                                 <xs:complexType>
-                                    <xs:sequence>
+                                    <xs:choice minOccurs="0" maxOccurs="unbounded">
                                         <xs:element name="Enrichment" maxOccurs="unbounded">
                                             <xs:complexType>
                                                 <xs:sequence>
@@ -98,7 +98,18 @@
                                                 <xs:attribute name="dataType" type="xs:string" use="optional"/>
                                             </xs:complexType>
                                         </xs:element>
-                                    </xs:sequence>
+                                        <xs:element name="GroupEnrichment" maxOccurs="unbounded">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="rule" type="xs:string" minOccurs="0"/>
+                                                    <xs:element name="groupBy" type="xs:string" minOccurs="0"/>
+                                                    <xs:element name="filter" type="xs:string" minOccurs="0"/>   
+                                                </xs:sequence>
+                                                <xs:attribute name="ColumnName" type="xs:string" use="required"/>
+                                                <xs:attribute name="dataType" type="xs:string" use="optional"/>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:choice>
                                 </xs:complexType>
                             </xs:element>
 

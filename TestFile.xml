@@ -1,5 +1,5 @@
 <Feeds>
-    <Feed FeedName="testdata.csv">
+    <Feed FeedName="C:\\Users\\yogesh.patil\\Desktop\\FeedParser\\testdata.csv">
         <properties delimiter ="," skipHeader="3" skipFooter="0" feedType="CSV"/>
         <columns>
             <column index = "1" DataType="str">Account</column>
@@ -29,6 +29,13 @@
                 <rule><![CDATA[Amount/100]]></rule>
                 <filter><![CDATA[Amount>1000]]></filter>
             </Enrichment>
+
+            <GroupEnrichment ColumnName="MaxAmount">
+                <rule><![CDATA[max(Amount)]]></rule>
+                <groupBy>DCIP</groupBy>
+                <filter><![CDATA[Amount>1000]]></filter>
+            </GroupEnrichment>
+
             <Enrichment ColumnName="DCIP">
                 <rule><![CDATA["CREDIT"]]></rule>
                 <filter>DCIP == "CR"</filter>
@@ -43,7 +50,7 @@
             <rule><![CDATA[DCIP == 'CREDIT']]></rule>
         </SingleStageDiscard>
 
-        <output FeedName ="Result.csv" delimiter ="," feedType="CSV" >
+        <output FeedName ="C:\\Users\\yogesh.patil\\Desktop\\FeedParser\\Result.csv" delimiter ="," feedType="CSV" >
             <column>Account</column>
             <column>DCIP</column>
             <column>Amount</column>
@@ -53,7 +60,7 @@
     </Feed>
 
 
-    <Feed FeedName="fixedWidthData.dat">
+    <Feed FeedName="C:\\Users\\yogesh.patil\\Desktop\\FeedParser\\fixedWidthData.dat">
         <properties delimiter ="," skipHeader="0" skipFooter="0" feedType="FIXWIDTH"/>
         <columns>
             <column index = "(0,5)" DataType="str">Account</column>
@@ -82,7 +89,7 @@
             <rule><![CDATA[]]></rule>
         </SingleStageDiscard>
 
-        <output FeedName ="FxResult.csv" delimiter ="," feedType="CSV" mode="W">
+        <output FeedName ="C:\\Users\\yogesh.patil\\Desktop\\FeedParser\\FxResult.csv" delimiter ="," feedType="CSV" mode="W">
             <column>Account</column>
             <column>Name</column>
             <column>Trade</column>

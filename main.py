@@ -74,10 +74,13 @@ class FeedParser:
             enrichemnts = feed.find('Enrichments')
             if enrichemnts is not None:
                 for enrichment in enrichemnts:
+                    print(enrichment.tag)
                     feed_info['enrichment'].append({
+                        'type' : 'GROUP' if enrichment.tag == 'GroupEnrichment' else 'RECORD',
                         'column' : enrichment.get("ColumnName"),
                         'filter': (enrichment.find("filter")).text if enrichment.find("filter") is not None else "" ,
                         'rule' : (enrichment.find("rule")).text,
+                        'groupBy' : (enrichment.find('groupBy')).text if enrichment.find('groupBy') is not None else "",
                         'dataType': enrichment.get("dataType","")
                     })
             output = feed.find('output')
@@ -128,8 +131,8 @@ def validate_xml(xml_file, xsd_file):
         return False
             
 if __name__ == "__main__":
-    configXmlFile = "TestFile.xml"
-    configXsd="validator.xsd"
+    configXmlFile = "C:\\Users\\yogesh.patil\\Desktop\\FeedParser\\TestFile.xml"
+    configXsd="C:\\Users\\yogesh.patil\\Desktop\\FeedParser\\validator.xsd"
     logging.info(f"Validating {configXmlFile}")
     if not validate_xml(configXmlFile, configXsd):
         exit(1)

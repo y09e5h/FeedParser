@@ -14,17 +14,26 @@ def _apply_filter(row, rule):
 def applyEnrichment(df,enrichments):
     #print(df)
     for enrichment in enrichments:
+
         column=enrichment["column"]
         #print(column)
         filter=enrichment["filter"]
         rule= enrichment["rule"]
         datatype = enrichment["dataType"]
+        etype = enrichment["type"]
 
-        is_eligible = df.apply(_apply_filter, args=(filter,), axis=1)
-        #print(is_eligible)
-        df.loc[is_eligible, column] = df.apply(_apply_filter, args=(rule,), axis=1)
-        #print("After enrichment:")
-        #print(df)
-        if datatype:
-            df[column] = df[column].astype(datatype)
+        if rule is None or rule == "":
+            print("Rule not specified")
+            return df
+        else:
+            if etype == "RECORD" :
+                is_eligible = df.apply(_apply_filter, args=(filter,), axis=1)
+                #print(is_eligible)
+                df.loc[is_eligible, column] = df.apply(_apply_filter, args=(rule,), axis=1)
+                #print("After enrichment:")
+                #print(df)
+                if datatype:
+                    df[column] = df[column].astype(datatype)
+            else :
+                pass
     return df
