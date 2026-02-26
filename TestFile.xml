@@ -16,6 +16,7 @@
             <rule><![CDATA[DCIP.upper() == "CREDIT"]]></rule>
             <rule></rule>
         </discards>
+        
         <Enrichments>
             <Enrichment ColumnName="DCIP">
                 <rule><![CDATA[DCIP.upper()]]></rule>
