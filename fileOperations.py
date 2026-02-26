@@ -47,7 +47,7 @@ def readData(feed):
                 df = _readFixWidth(feed)
                 return df
             else :
-                logging.critical("Invalid File Format")
+                logging.critical("⚠️ Invalid File Format")
                 return pd.DataFrame()
         except FileNotFoundError as e:
             logging.critical(e)

@@ -10,7 +10,7 @@ def _apply_filter(row, rule):
     except Exception as e:
         global ruleSucess
         if ruleSucess:
-            logging.critical(f"Error evaluating rule '{rule}': {e}")
+            logging.critical(f"❌ Error evaluating rule '{rule}': {e}")
             ruleSucess = False
         return False
 
@@ -19,5 +19,6 @@ def applyDiscard(df, discards):
         global ruleSucess
         ruleSucess = True
         is_discarded = df.apply(_apply_filter, args=(discard_rule,), axis=1)
-        df = df.loc[~is_discarded].copy()     
+        df = df.loc[~is_discarded].copy()
+        df = df.reset_index(drop=True)
     return df

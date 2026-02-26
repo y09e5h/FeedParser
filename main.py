@@ -131,14 +131,14 @@ def validate_xml(xml_file, xsd_file):
         return False
             
 if __name__ == "__main__":
-    configXmlFile = "C:\\Users\\yogesh.patil\\Desktop\\FeedParser\\TestFile.xml"
-    configXsd="C:\\Users\\yogesh.patil\\Desktop\\FeedParser\\validator.xsd"
+    configXmlFile = "TestFile.xml"
+    configXsd="validator.xsd"
     logging.info(f"Validating {configXmlFile}")
     if not validate_xml(configXmlFile, configXsd):
         exit(1)
     logging.info(f"Parsing {configXsd}")
     parser = FeedParser(configXmlFile)
-    #print(parser.feeds)
+    print(parser.feeds)
     for feed in parser.feeds:
         logging.info("")
         logging.info(f"================================ START {feed['feed_name']}===========================")

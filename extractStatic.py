@@ -11,7 +11,7 @@ def _apply_rule(column,data, rule):
         result = eval(rule, STATIC_VARIABLES, {column:data})
         return result
     except Exception as e:
-        logging.critical(f"Error evaluating rule '{rule}': {e}")
+        logging.critical(f"❌ Error evaluating rule '{rule}': {e}")
         return data
 
 def _apply_filter(localvars, rule):
@@ -21,7 +21,7 @@ def _apply_filter(localvars, rule):
     try:
         return eval(rule, STATIC_VARIABLES, localvars)
     except Exception as e:
-        logging.critical(f"Error evaluating rule '{rule}': {e}")
+        logging.critical(f"❌ Error evaluating rule '{rule}': {e}")
         ruleSucess=False
         return False
 
