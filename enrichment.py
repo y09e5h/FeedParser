@@ -21,6 +21,7 @@ def applyEnrichment(df,enrichments):
         rule= enrichment["rule"]
         datatype = enrichment["dataType"]
         etype = enrichment["type"]
+        groupCol = enrichment['groupBy']
 
         if rule is None or rule == "":
             print("Rule not specified")
