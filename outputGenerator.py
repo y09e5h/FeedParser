@@ -1,10 +1,11 @@
 import logging
-
+import re
 from GlobalConfig import STATIC_VARIABLES
 ruleSucess = True
 def _apply_filter(row, rule):
+    #print(row)
     if not rule or not rule.strip():
-        return False    
+        return True    
     try:
         return eval(rule, STATIC_VARIABLES, row.to_dict())
     except Exception as e:
@@ -14,11 +15,13 @@ def _apply_filter(row, rule):
             ruleSucess = False
         return False
 
-def applyDiscard(df, discards):
-    for discard_rule in discards:
-        global ruleSucess
-        ruleSucess = True
-        is_discarded = df.apply(_apply_filter, args=(discard_rule,), axis=1)
-        df = df.loc[~is_discarded].copy()
-        #df = df.reset_index(drop=True)
+def getOutput(df, output):
+    FilterRule_rule = output['filter']
+    global ruleSucess
+    ruleSucess = True
+    print(FilterRule_rule)
+    is_valid = df.apply(_apply_filter, args=(FilterRule_rule,), axis=1)
+    df = df.loc[is_valid].copy()
+    #df = df.reset_index(drop=True)
+    print(df)
     return df

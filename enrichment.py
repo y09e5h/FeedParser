@@ -1,18 +1,23 @@
 import logging
 import re
 from GlobalConfig import STATIC_VARIABLES
-
+ruleSucess = True
 def _apply_filter(row, rule):
     #print(row)
     if not rule or not rule.strip():
         return True    
     try:
+        
         return eval(rule, STATIC_VARIABLES, row.to_dict())
     except Exception as e:
-        logging.critical(f"❌ Error evaluating rule '{rule}': {e}")
+        global ruleSucess
+        if ruleSucess:
+            logging.critical(f"❌ Error evaluating rule '{rule}': {e}")
+            ruleSucess = False
         return False
 def applyEnrichment(df,enrichments):
     #print(df)
+    global ruleSucess
     for enrichment in enrichments:
 
         column=enrichment["column"]
@@ -33,9 +38,12 @@ def applyEnrichment(df,enrichments):
             if etype == "RECORD" :
                 #print(is_eligible)
                 if filter is None or filter == "":
+                    ruleSucess = True
                     df[column] = df.apply(_apply_filter, args=(rule,), axis=1)
                 else:
+                    ruleSucess = True
                     is_eligible = df.apply(_apply_filter, args=(filter,), axis=1)
+                    ruleSucess = True
                     df.loc[is_eligible, column] = df.apply(_apply_filter, args=(rule,), axis=1)
 
             else :
@@ -45,8 +53,8 @@ def applyEnrichment(df,enrichments):
                 if match:
                     gfunction = match.group('func')
                     fcol = match.group('col')
-                    print(fcol)
-                    print(gfunction)
+                    #print(fcol)
+                    #print(gfunction)
                     if filter is None or filter == "":
                         if grpcoltext is None or grpcoltext == "":
                             #print(df)

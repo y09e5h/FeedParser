@@ -123,15 +123,31 @@
                             </xs:element>
 
                             <!-- Output -->
-                            <xs:element name="output">
+                            <xs:element name="outputs">
                                 <xs:complexType>
-                                    <xs:sequence>
-                                        <xs:element name="column" type="xs:string" maxOccurs="unbounded"/>
-                                    </xs:sequence>
-                                    <xs:attribute name="FeedName" type="xs:string" use="required"/>
-                                    <xs:attribute name="delimiter" type="xs:string" use="optional"/>
-                                    <xs:attribute name="feedType" type="FeedType" use="required"/>
-                                    <xs:attribute name="mode" type="ModeType" use="optional"/>
+                                <xs:sequence>
+                                    <xs:element name="output" maxOccurs="unbounded">
+                                    <xs:complexType>
+                                        <xs:sequence>
+                                        <!-- Columns container -->
+                                        <xs:element name="columns">
+                                            <xs:complexType>
+                                            <xs:sequence>
+                                                <xs:element name="column" type="xs:string" maxOccurs="unbounded"/>
+                                            </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <!-- Optional filter element -->
+                                        <xs:element name="filter" type="xs:string" minOccurs="0"/>
+                                        </xs:sequence>
+                                        <!-- Attributes for <output> -->
+                                        <xs:attribute name="FeedName" type="xs:string" use="required"/>
+                                        <xs:attribute name="delimiter" type="xs:string" use="required"/>
+                                        <xs:attribute name="feedType" type="xs:string" use="required"/>
+                                        <xs:attribute name="mode" type="ModeType" use="optional"/>
+                                    </xs:complexType>
+                                    </xs:element>
+                                </xs:sequence>
                                 </xs:complexType>
                             </xs:element>
 

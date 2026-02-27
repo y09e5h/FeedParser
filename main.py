@@ -3,6 +3,7 @@ from fileOperations import readData, writeData
 from discard import applyDiscard
 from enrichment import applyEnrichment
 from extractStatic import staticGenerator
+from outputGenerator import getOutput
 from lxml import etree
 import logging
 
@@ -29,7 +30,8 @@ class FeedParser:
                 'staticColumn':[],
                 'discards': [],
                 'enrichment': [],
-                'single_stage_discard': []
+                'single_stage_discard': [],
+                'outputs':[]
             }
             
             properties = feed.find('properties')
@@ -83,19 +85,23 @@ class FeedParser:
                         'groupBy' : (enrichment.find('groupBy')).text if enrichment.find('groupBy') is not None else "",
                         'dataType': enrichment.get("dataType","")
                     })
-            output = feed.find('output')
-            if output is not None:
+            outputs = feed.find('outputs')
+            for output in outputs:
+                #print(output)
                 nmlist = []
-                for column in output.findall('column'):
+                for column in output.find('columns'):
+                    #print("1----->")
+                    #print(column)
                     nmlist.append(column.text)
 
-                feed_info['output'] = {
+                feed_info['outputs'].append({
                     'FeedName' : output.get("FeedName"),
                     'delimiter' : output.get("delimiter"),
                     'feedType' : output.get("feedType"),
                     'name': nmlist,
                     'mode' : output.get("mode") if output.get("mode") is not None else "W",
-                }
+                    'filter' : (output.find("filter")).text if output.find("filter") is not None else "" 
+                })
 
             rules = feed.find('SingleStageDiscard')
             if rules is not None:
@@ -131,8 +137,8 @@ def validate_xml(xml_file, xsd_file):
         return False
             
 if __name__ == "__main__":
-    configXmlFile = "TestFile.xml"
-    configXsd="validator.xsd"
+    configXmlFile = "C:\\Users\\yogesh.patil\\Desktop\\FeedParser\\TestFile.xml"
+    configXsd="C:\\Users\\yogesh.patil\\Desktop\\FeedParser\\validator.xsd"
     logging.info(f"Validating {configXmlFile}")
     if not validate_xml(configXmlFile, configXsd):
         exit(1)
@@ -165,6 +171,8 @@ if __name__ == "__main__":
                     logging.warning(f"Empty dataset skipping the Stage Discard")
         else:
             logging.warning(f"Processing skipped : Data is empty for {feed['feed_name']}")
-        logging.info(f"Writing to {feed['output']['FeedName']}")
-        writeData(df,feed["output"])
+        
+        for output in feed["outputs"]:
+            logging.info(f"Writing to {output['FeedName']}")
+            writeData(getOutput(df,output),output)
 
