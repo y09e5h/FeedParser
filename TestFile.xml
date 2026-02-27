@@ -104,16 +104,7 @@
         <SingleStageDiscard>
             <rule><![CDATA[]]></rule>
         </SingleStageDiscard>
-        <outputs>
-            <output FeedName ="C:\\Users\\yogesh.patil\\Desktop\\FeedParser\\FxResult.csv" delimiter ="," feedType="CSV" mode="W">
-                <columns>
-                    <column>Account</column>
-                    <column>Name</column>
-                    <column>Trade</column>
-                </columns>
-                <filter></filter>
-            </output>
-        </outputs>
+        
 
     </Feed>
 

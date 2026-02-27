@@ -86,22 +86,23 @@ class FeedParser:
                         'dataType': enrichment.get("dataType","")
                     })
             outputs = feed.find('outputs')
-            for output in outputs:
-                #print(output)
-                nmlist = []
-                for column in output.find('columns'):
-                    #print("1----->")
-                    #print(column)
-                    nmlist.append(column.text)
+            if outputs is not None:
+                for output in outputs:
+                    #print(output)
+                    nmlist = []
+                    for column in output.find('columns'):
+                        #print("1----->")
+                        #print(column)
+                        nmlist.append(column.text)
 
-                feed_info['outputs'].append({
-                    'FeedName' : output.get("FeedName"),
-                    'delimiter' : output.get("delimiter"),
-                    'feedType' : output.get("feedType"),
-                    'name': nmlist,
-                    'mode' : output.get("mode") if output.get("mode") is not None else "W",
-                    'filter' : (output.find("filter")).text if output.find("filter") is not None else "" 
-                })
+                    feed_info['outputs'].append({
+                        'FeedName' : output.get("FeedName"),
+                        'delimiter' : output.get("delimiter"),
+                        'feedType' : output.get("feedType"),
+                        'name': nmlist,
+                        'mode' : output.get("mode") if output.get("mode") is not None else "W",
+                        'filter' : (output.find("filter")).text if output.find("filter") is not None else "" 
+                    })
 
             rules = feed.find('SingleStageDiscard')
             if rules is not None:

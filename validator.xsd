@@ -123,7 +123,7 @@
                             </xs:element>
 
                             <!-- Output -->
-                            <xs:element name="outputs">
+                            <xs:element name="outputs" minOccurs="0">
                                 <xs:complexType>
                                 <xs:sequence>
                                     <xs:element name="output" maxOccurs="unbounded">
