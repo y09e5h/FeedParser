@@ -76,7 +76,6 @@ class FeedParser:
             enrichemnts = feed.find('Enrichments')
             if enrichemnts is not None:
                 for enrichment in enrichemnts:
-                    print(enrichment.tag)
                     feed_info['enrichment'].append({
                         'type' : 'GROUP' if enrichment.tag == 'GroupEnrichment' else 'RECORD',
                         'column' : enrichment.get("ColumnName"),

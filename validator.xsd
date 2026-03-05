@@ -10,6 +10,7 @@
             <xs:enumeration value="PDF"/>
             <xs:enumeration value="JSON"/>
             <xs:enumeration value="XML"/>
+            <xs:enumeration value="DATAFRAME"/>
         </xs:restriction>
     </xs:simpleType>
 
@@ -142,8 +143,8 @@
                                         </xs:sequence>
                                         <!-- Attributes for <output> -->
                                         <xs:attribute name="FeedName" type="xs:string" use="required"/>
-                                        <xs:attribute name="delimiter" type="xs:string" use="required"/>
-                                        <xs:attribute name="feedType" type="xs:string" use="required"/>
+                                        <xs:attribute name="delimiter" type="xs:string" use="optional"/>
+                                        <xs:attribute name="feedType" type="FeedType" use="required"/>
                                         <xs:attribute name="mode" type="ModeType" use="optional"/>
                                     </xs:complexType>
                                     </xs:element>

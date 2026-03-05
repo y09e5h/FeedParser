@@ -51,7 +51,7 @@
             <rule><![CDATA[]]></rule>
         </SingleStageDiscard>
         <outputs>
-            <output FeedName ="C:\\Users\\yogesh.patil\\Desktop\\FeedParser\\ResultCR.csv" delimiter ="," feedType="CSV" >
+            <output FeedName ="CRDATA" feedType="DATAFRAME" >
                 <columns>
                     <column>Account</column>
                     <column>DCIP</column>

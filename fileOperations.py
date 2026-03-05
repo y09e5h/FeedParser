@@ -2,6 +2,7 @@ import logging
 
 import pandas as pd
 import ast
+from GlobalConfig import __DATAFRAME__
 def _readCSV(feed):
     index_list = []
     for ind in feed['columns'].get('index'):
@@ -27,6 +28,16 @@ def _readFixWidth(feed):
                        skipfooter=int(feed['properties'].get('skipFooter', 0)), engine='python')
 
 
+def _readDataFrame(name):
+    global __DATAFRAME__
+    
+    if name in __DATAFRAME__:
+        return __DATAFRAME__[name]
+    else:
+        logging.error(f"❌ {name} DataFrame does not exist.")
+        return pd.DataFrame()
+
+
 def _readJSON(feed):
     pass
 def _writeJSON(df,feedName,columnNames,mode):
@@ -46,6 +57,8 @@ def readData(feed):
             elif feedType == "FIXWIDTH":
                 df = _readFixWidth(feed)
                 return df
+            elif feedType == "DATAFRAME".upper():
+                df = _readDataFrame(feed['feed_name'])
             else :
                 logging.critical("⚠️ Invalid File Format")
                 return pd.DataFrame()

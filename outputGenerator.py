@@ -1,6 +1,7 @@
 import logging
 import re
 from GlobalConfig import STATIC_VARIABLES
+from GlobalConfig import __DATAFRAME__
 ruleSucess = True
 def _apply_filter(row, rule):
     #print(row)
@@ -23,5 +24,9 @@ def getOutput(df, output):
     is_valid = df.apply(_apply_filter, args=(FilterRule_rule,), axis=1)
     df = df.loc[is_valid].copy()
     #df = df.reset_index(drop=True)
-    print(df)
+    if output["feedType"] == "DATAFRAME".upper() :
+        global __DATAFRAME__
+        __DATAFRAME__[output["FeedName"]] = df[output["name"]]
+        logging.info(f"{output["FeedName"]} DataFrame created")
+        print(__DATAFRAME__[output["FeedName"]])
     return df
