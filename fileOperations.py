@@ -11,13 +11,13 @@ def _readCSV(feed):
     df = pd.read_csv(feed['feed_name'],usecols=index_list,delimiter=delim,names=feed['columns'].get("name"),dtype=feed['columns'].get('data_type') ,skiprows=int(feed['properties'].get('skipHeader', 0)), skipfooter=int(feed['properties'].get('skipFooter', 0)), engine='python')
     return df
 
-def _writeCSV(df,feedName,delimiter,columnNames,mode):
+def _writeCSV(df,feedName,delimiter,columnNames,mode,head):
     try:
-        df.to_csv(feedName,sep=delimiter,columns=columnNames, mode=mode ,index=False)
+        df.to_csv(feedName,sep=delimiter,columns=columnNames, mode=mode, header=head,index=False)
     except KeyError as e:
         print("Column is not defined")
         print(e)
-def _writeFixWidth(df,feedName,columnNames,mode):
+def _writeFixWidth(df,feedName,columnNames,mode,header):
     with open(feedName, mode) as f:
         f.write(df[columnNames].to_string(index=False))
 def _readFixWidth(feed):
@@ -40,7 +40,7 @@ def _readDataFrame(name):
 
 def _readJSON(feed):
     pass
-def _writeJSON(df,feedName,columnNames,mode):
+def _writeJSON(df,feedName,columnNames,mode,header):
     df[columnNames].to_json(feedName,orient='records',mode=mode,date_format='iso')
 
 def _readPDF(feed):
@@ -80,14 +80,15 @@ def writeData(df,outputFormat):
     delimiter = outputFormat['delimiter']
     columnNames = outputFormat['name']
     mode = outputFormat['mode'].lower()
+    header = outputFormat['header']
 
     if df.empty:
         df = pd.DataFrame(columns=columnNames)
     if feedType == 'CSV' or feedType == "TXT":
-        _writeCSV(df, feedName,delimiter,columnNames,mode)
+        _writeCSV(df, feedName,delimiter,columnNames,mode,header)
     elif feedType == "FIXWIDTH":
-        _writeFixWidth(df, feedName,columnNames,mode)
+        _writeFixWidth(df, feedName,columnNames,mode,header)
     elif feedType == "JSON":
-        _writeJSON(df, feedName,columnNames,mode)
+        _writeJSON(df, feedName,columnNames,mode,header)
     else:
         pass

@@ -76,14 +76,31 @@ class FeedParser:
             enrichemnts = feed.find('Enrichments')
             if enrichemnts is not None:
                 for enrichment in enrichemnts:
-                    feed_info['enrichment'].append({
-                        'type' : 'GROUP' if enrichment.tag == 'GroupEnrichment' else 'RECORD',
-                        'column' : enrichment.get("ColumnName"),
-                        'filter': (enrichment.find("filter")).text if enrichment.find("filter") is not None else "" ,
-                        'rule' : (enrichment.find("rule")).text,
-                        'groupBy' : (enrichment.find('groupBy')).text if enrichment.find('groupBy') is not None else "",
-                        'dataType': enrichment.get("dataType","")
-                    })
+                    etype = 'RECORD'
+                    if enrichment.tag == 'GroupEnrichment':
+                        etype = "GROUP"
+                    elif enrichment.tag == 'JoinEnrichment':
+                        etype = "JOIN"
+                    else:
+                        etype = "RECORD"
+
+                    if etype != "JOIN":
+                        feed_info['enrichment'].append({
+                            'type' : etype,
+                            'column' : enrichment.get("ColumnName"),
+                            'filter': (enrichment.find("filter")).text if enrichment.find("filter") is not None else "" ,
+                            'rule' : (enrichment.find("rule")).text,
+                            'groupBy' : (enrichment.find('groupBy')).text if enrichment.find('groupBy') is not None else "",
+                            'dataType': enrichment.get("dataType","")
+                        })
+                    else:
+                        feed_info['enrichment'].append({
+                            'type' : etype,
+                            'DataFrame' : enrichment.get("DataFrame"),
+                            'on': (enrichment.find("on")).text,
+                            'how' : (enrichment.find("how")).text
+                        })
+
             outputs = feed.find('outputs')
             if outputs is not None:
                 for output in outputs:
@@ -100,6 +117,7 @@ class FeedParser:
                         'feedType' : output.get("feedType"),
                         'name': nmlist,
                         'mode' : output.get("mode") if output.get("mode") is not None else "W",
+                        'header' : output.get("header") if output.get("header") is not None else "True",
                         'filter' : (output.find("filter")).text if output.find("filter") is not None else "" 
                     })
 

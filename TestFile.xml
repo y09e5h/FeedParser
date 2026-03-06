@@ -61,7 +61,7 @@
                 </columns>
                 <filter>DCIP == 'CREDIT'</filter>
             </output>
-            <output FeedName ="C:\\Users\\yogesh.patil\\Desktop\\FeedParser\\ResultDE.csv" delimiter ="," feedType="CSV" >
+            <output FeedName ="C:\\Users\\yogesh.patil\\Desktop\\FeedParser\\ResultDE.csv" delimiter ="," feedType="CSV" header="True">
                 <columns>
                     <column>Account</column>
                     <column>DCIP</column>
@@ -79,9 +79,9 @@
     <Feed FeedName="C:\\Users\\yogesh.patil\\Desktop\\FeedParser\\fixedWidthData.dat">
         <properties delimiter ="," skipHeader="0" skipFooter="0" feedType="FIXWIDTH"/>
         <columns>
-            <column index = "(0,5)" DataType="str">Account</column>
-            <column index = "(6,17)" DataType="str">Name</column>
-            <column index = "(18,28)" DataType="str">Trade</column>
+            <column index = "(0,14)" DataType="str">Account</column>
+            <column index = "(15,28)" DataType="str">Name</column>
+            <column index = "(28,40)" DataType="str">Trade</column>
         </columns>
         <!--<staticColumns>-->
            <!-- <column name="cob_date">
@@ -93,18 +93,36 @@
             <rule><![CDATA[Trade.upper() == "CREDIT"]]></rule>
             <rule></rule>
         </discards>
+        
         <Enrichments>
             <Enrichment ColumnName="Trade">
                 <rule><![CDATA[Trade.upper()]]></rule>
                 <filter></filter>
             </Enrichment>
+           <JoinEnrichment DataFrame="CRDATA">
+                <how>leftt</how>
+                <on>Account</on>
+            </JoinEnrichment>
 
         </Enrichments>
 
         <SingleStageDiscard>
             <rule><![CDATA[]]></rule>
         </SingleStageDiscard>
-        
+         <outputs>
+           
+            <output FeedName ="C:\\Users\\yogesh.patil\\Desktop\\FeedParser\\JoinData.csv" delimiter ="," feedType="CSV" header="True">
+                <columns>
+                    <column>Account</column>
+                    <column>DCIP</column>
+                    <column>Amount</column>
+                    <column>Name</column>
+                    <column>Trade</column>
+                    <column>COBDATE</column>
+                </columns>
+                
+            </output>
+        </outputs>
 
     </Feed>
 
