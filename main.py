@@ -193,4 +193,5 @@ if __name__ == "__main__":
         for output in feed["outputs"]:
             logging.info(f"Writing to {output['FeedName']}")
             writeData(getOutput(df,output),output)
+            print(df)
 

@@ -100,7 +100,7 @@
                 <filter></filter>
             </Enrichment>
            <JoinEnrichment DataFrame="CRDATA">
-                <how>leftt</how>
+                <how>left</how>
                 <on>Account</on>
             </JoinEnrichment>
 

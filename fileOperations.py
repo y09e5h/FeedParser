@@ -1,7 +1,9 @@
 import logging
-
+from lxml import etree
 import pandas as pd
 import ast
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 from GlobalConfig import __DATAFRAME__
 def _readCSV(feed):
     index_list = []
@@ -45,8 +47,51 @@ def _writeJSON(df,feedName,columnNames,mode,header):
 
 def _readPDF(feed):
     pass
-def _writePDF(feed):
-    pass
+def _writePDF(df,pdf_file):
+
+    try:
+        with PdfPages(pdf_file) as pdf:
+            # Create a figure and axis
+            fig, ax = plt.subplots(figsize=(8, 4))
+            ax.axis('tight')
+            ax.axis('off')
+
+            # Create table from DataFrame
+            table = ax.table(
+                cellText=df.values,
+                colLabels=df.columns,
+                cellLoc='center',
+                loc='center'
+            )
+
+            # Adjust table style
+            table.auto_set_font_size(False)
+            table.set_fontsize(10)
+            table.scale(1.2, 1.2)
+
+            # Save the figure to PDF
+            pdf.savefig(fig, bbox_inches='tight')
+            plt.close(fig)
+
+        print(f"✅ DataFrame successfully saved to '{pdf_file}'")
+
+    except Exception as e:
+        print(f"❌ Error: {e}")
+
+def _readXML(feed):
+    try:
+        # Parse XML
+        tree = etree.parse(feed['feed_name'])
+        # Extract data using XPath
+        dataset={}
+        for ind,nm in zip(feed['columns'].get('index'),feed['columns'].get('name')):
+            dataset[nm] = tree.xpath(ind)
+        # Create DataFrame
+        df = pd.DataFrame(dataset)      
+        return df
+    
+    except Exception as e:
+        logging.critical(f"⚠️Unexpected error: {e}")
 
 def readData(feed):
         feedType = feed['properties'].get('feedType')
@@ -56,6 +101,9 @@ def readData(feed):
                 return df
             elif feedType == "FIXWIDTH":
                 df = _readFixWidth(feed)
+                return df
+            elif feedType == "XML":
+                df = _readXML(feed)
                 return df
             elif feedType == "DATAFRAME".upper():
                 df = _readDataFrame(feed['feed_name'])
@@ -90,5 +138,7 @@ def writeData(df,outputFormat):
         _writeFixWidth(df, feedName,columnNames,mode,header)
     elif feedType == "JSON":
         _writeJSON(df, feedName,columnNames,mode,header)
+    elif feedType == "PDF":
+        _writePDF(df,feedName)
     else:
         pass
