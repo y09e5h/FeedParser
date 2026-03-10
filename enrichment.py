@@ -29,12 +29,12 @@ def applyEnrichment(df,enrichments):
             how = enrichment["how"]
             oncols = enrichment["on"].split(",")
             DataFrameName = enrichment["DataFrame"]
-            print(how)
-            print(oncols)
+            #print(how)
+            #print(oncols)
             global __DATAFRAME__
             if DataFrameName in __DATAFRAME__:
-                print(__DATAFRAME__[DataFrameName])
-                print(df)
+                #print(__DATAFRAME__[DataFrameName])
+                #print(df)
                 #df = df.join(__DATAFRAME__[DataFrameName],on=oncols,how=how)
                 df = pd.merge(df,__DATAFRAME__[DataFrameName],on=oncols,how=how)
             else:

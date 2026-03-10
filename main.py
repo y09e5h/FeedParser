@@ -155,8 +155,8 @@ def validate_xml(xml_file, xsd_file):
         return False
             
 if __name__ == "__main__":
-    configXmlFile = "C:\\Users\\yogesh.patil\\Desktop\\FeedParser\\TestFile.xml"
-    configXsd="C:\\Users\\yogesh.patil\\Desktop\\FeedParser\\validator.xsd"
+    configXmlFile = "TestFile.xml"
+    configXsd="validator.xsd"
     logging.info(f"Validating {configXmlFile}")
     if not validate_xml(configXmlFile, configXsd):
         exit(1)
@@ -193,5 +193,5 @@ if __name__ == "__main__":
         for output in feed["outputs"]:
             logging.info(f"Writing to {output['FeedName']}")
             writeData(getOutput(df,output),output)
-            print(df)
+            logging.info(df)
 

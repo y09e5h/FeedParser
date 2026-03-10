@@ -10,25 +10,37 @@ def _readCSV(feed):
     for ind in feed['columns'].get('index'):
         index_list.append(int(ind)-1)
     delim = feed['properties'].get("delimiter") if feed['properties'].get("delimiter") is not None else ","
-    df = pd.read_csv(feed['feed_name'],usecols=index_list,delimiter=delim,names=feed['columns'].get("name"),dtype=feed['columns'].get('data_type') ,skiprows=int(feed['properties'].get('skipHeader', 0)), skipfooter=int(feed['properties'].get('skipFooter', 0)), engine='python')
-    return df
+    try:
+        df = pd.read_csv(feed['feed_name'],usecols=index_list,delimiter=delim,names=feed['columns'].get("name"),dtype=feed['columns'].get('data_type') ,skiprows=int(feed['properties'].get('skipHeader', 0)), skipfooter=int(feed['properties'].get('skipFooter', 0)), engine='python')
+        return df
+    except Exception as e:
+        logging.critical(f"❌ Error while reading csv file: {e}")
+        return pd.DataFrame()
 
 def _writeCSV(df,feedName,delimiter,columnNames,mode,head):
     try:
         df.to_csv(feedName,sep=delimiter,columns=columnNames, mode=mode, header=head,index=False)
+        logging.info(f"✅ DataFrame successfully saved to '{feedName}'")
     except KeyError as e:
-        print("Column is not defined")
-        print(e)
+        logging.error(f"❌ Column is not defined")
+        logging.error(f"❌ {e}")
 def _writeFixWidth(df,feedName,columnNames,mode,header):
-    with open(feedName, mode) as f:
-        f.write(df[columnNames].to_string(index=False))
+    try:
+        with open(feedName, mode) as f:
+            f.write(df[columnNames].to_string(index=False))
+        logging.info(f"✅ DataFrame successfully saved to '{feedName}'")
+    except Exception as e:
+        logging.error(f"❌ Error while writing file {feedName}: {e}")
 def _readFixWidth(feed):
     index_list = [ast.literal_eval(i) for i in feed['columns'].get('index')]
-    return pd.read_fwf(feed['feed_name'], colspecs=index_list,
+    try:
+        return pd.read_fwf(feed['feed_name'], colspecs=index_list,
                        names=feed['columns'].get("name"),
                        dtype=feed['columns'].get('data_type'), skiprows=int(feed['properties'].get('skipHeader', 0)),
                        skipfooter=int(feed['properties'].get('skipFooter', 0)), engine='python')
-
+    except Exception as e:
+        logging.critical(f"❌ Error while reading csv file: {e}")
+        return pd.DataFrame()
 
 def _readDataFrame(name):
     global __DATAFRAME__
@@ -43,8 +55,11 @@ def _readDataFrame(name):
 def _readJSON(feed):
     pass
 def _writeJSON(df,feedName,columnNames,mode,header):
-    df[columnNames].to_json(feedName,orient='records',mode=mode,date_format='iso')
-
+    try:
+        df[columnNames].to_json(feedName,orient='records',mode=mode,date_format='iso')
+        logging.info(f"✅ DataFrame successfully saved to '{feedName}'")
+    except Exception as e:
+        logging.error(f"❌ Error while writing file {feedName}: {e}")
 def _readPDF(feed):
     pass
 def _writePDF(df,pdf_file):
@@ -73,10 +88,10 @@ def _writePDF(df,pdf_file):
             pdf.savefig(fig, bbox_inches='tight')
             plt.close(fig)
 
-        print(f"✅ DataFrame successfully saved to '{pdf_file}'")
+        logging.info(f"✅ DataFrame successfully saved to '{pdf_file}'")
 
     except Exception as e:
-        print(f"❌ Error: {e}")
+        logging.error(f"❌ Error: {e}")
 
 def _readXML(feed):
     try:
@@ -90,7 +105,7 @@ def _readXML(feed):
         return pd.DataFrame(dataset)
     
     except Exception as e:
-        logging.critical(f"⚠️Unexpected error: {e}")
+        logging.critical(f"❌ Error while reading file {feed['feed_name']}: {e}")
 
 def readData(feed):
         feedType = feed['properties'].get('feedType')

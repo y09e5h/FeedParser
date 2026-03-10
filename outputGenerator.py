@@ -20,13 +20,13 @@ def getOutput(df, output):
     FilterRule_rule = output['filter']
     global ruleSucess
     ruleSucess = True
-    print(FilterRule_rule)
+    #print(FilterRule_rule)
     is_valid = df.apply(_apply_filter, args=(FilterRule_rule,), axis=1)
     df = df.loc[is_valid].copy()
     #df = df.reset_index(drop=True)
     if output["feedType"] == "DATAFRAME".upper() :
         global __DATAFRAME__
         __DATAFRAME__[output["FeedName"]] = df[output["name"]]
-        logging.info(f"{output["FeedName"]} DataFrame created")
-        print(__DATAFRAME__[output["FeedName"]])
+        logging.info(f"✅ {output["FeedName"]} DataFrame created.")
+        #print(__DATAFRAME__[output["FeedName"]])
     return df
