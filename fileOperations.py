@@ -87,8 +87,7 @@ def _readXML(feed):
         for ind,nm in zip(feed['columns'].get('index'),feed['columns'].get('name')):
             dataset[nm] = tree.xpath(ind)
         # Create DataFrame
-        df = pd.DataFrame(dataset)      
-        return df
+        return pd.DataFrame(dataset)
     
     except Exception as e:
         logging.critical(f"⚠️Unexpected error: {e}")
