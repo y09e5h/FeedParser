@@ -1,10 +1,11 @@
 import logging
+
+import pdfplumber
 from lxml import etree
 import pandas as pd
 import ast
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
-from GlobalConfig import __DATAFRAME__
 def _readCSV(feed):
     index_list = []
     for ind in feed['columns'].get('index'):
@@ -61,7 +62,40 @@ def _writeJSON(df,feedName,columnNames,mode,header):
     except Exception as e:
         logging.error(f"❌ Error while writing file {feedName}: {e}")
 def _readPDF(feed):
-    pass
+    all_data = []
+
+    with pdfplumber.open(feed['feed_name']) as pdf:
+        skipheader = int(feed['properties'].get('skipHeader', 0))
+        # If skipFooter is 0, we want to slice until the end (None)
+        footer_val = int(feed['properties'].get('skipFooter', 0))
+        skipfooter = -footer_val if footer_val > 0 else None
+
+        for page in pdf.pages:
+            table = page.extract_table()
+            if table:
+                all_data.extend(table[skipheader:skipfooter])
+    logging.info(all_data)
+    if all_data:
+        # 1. Create a temporary DataFrame of ALL columns found in the PDF
+        df_temp = pd.DataFrame(all_data)
+
+        # 2. Get the list of column indices (e.g., [0, 1, 4])
+        # Subtracting 1 because PDF indices usually start at 1 in configs
+        index_list = [int(i) - 1 for i in feed['columns'].get('index')]
+
+        # 3. Select only the requested columns by index
+        df = df_temp.iloc[:, index_list]
+
+        # 4. Assign the clean column names from your config
+        df.columns = feed['columns'].get("name")
+        logging.info("Printing DF")
+        logging.info(df)
+        return df
+    else:
+        logging.error(f"❌ Data not found in {feed['feed_name']}")
+        return pd.DataFrame()
+
+
 def _writePDF(df,pdf_file):
 
     try:
@@ -119,8 +153,12 @@ def readData(feed):
             elif feedType == "XML":
                 df = _readXML(feed)
                 return df
+            elif feedType == "PDF":
+                df = _readPDF(feed)
+                return df
             elif feedType == "DATAFRAME".upper():
                 df = _readDataFrame(feed['feed_name'])
+                return df
             else :
                 logging.critical("⚠️ Invalid File Format")
                 return pd.DataFrame()
